@@ -24,9 +24,10 @@ src/*.dll
 .idea/
 .vscode/
 
-# Research outputs (not shipped)
-research/results/
-research/cache/
+# Research (not shipped or tracked)
+research/
+
+# Cached intermediates
 analysis/cache/
 analysis/*.csv
 data-raw/cache/
