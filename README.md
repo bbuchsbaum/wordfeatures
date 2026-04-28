@@ -115,24 +115,47 @@ predict_imageability(c("cat", "dog", "theoretical"))
 # Default: OpenAI text-embedding-3-large (matches the bundled model)
 ```
 
-The bundled glmnet model was trained on **OpenAI `text-embedding-3-large`**
-embeddings combined with NoRaRe-derived lexical features. Calling
-`predict_imageability()` with a different provider or model will still
-work, but the function emits a `warning()` about possible degraded
-predictions because the embedding space no longer matches the model.
+**Use the defaults.** The bundled model is locked to a specific embedding
+space — OpenAI `text-embedding-3-large` (3072-dim) — combined with
+NoRaRe-derived lexical features. The defaults of `predict_imageability()`
+already match this. Calling
 
 ```r
-# Same call, but force Google embeddings — will warn.
+predict_imageability(c("cat", "dog", "theoretical"))
+```
+
+is what you want in 99% of cases.
+
+**Why you generally should not override the embedding.** Different
+embedding models produce vectors in different, incompatible coordinate
+spaces. Feeding the model vectors from another model (e.g.
+`text-embedding-3-small` or any Google embedding) is like handing it
+random numbers — the regression coefficients were learned for a different
+space. Predictions will technically be returned, but they are not
+meaningful, and `predict_imageability()` emits a `warning()` to tell you
+so:
+
+```r
 predict_imageability(
   c("cat", "dog"),
   embedding_provider = "google",
   embedding_model    = "gemini-embedding-001"
 )
+#> Warning: The bundled imageability model was trained with openai /
+#> text-embedding-3-large. Predictions with google / gemini-embedding-001
+#> may be degraded.
 ```
 
-Words missing from the bundled lexical lookup table get zero-filled
-features plus a missingness flag, so the model handles unseen vocabulary
-gracefully.
+Override only if you have separately verified that the alternative
+embedding works for your use case (e.g. you re-fit a model yourself and
+swapped in your own bundle).
+
+**Handling of unknown words.** Independently of the embedding, words
+that are not in the bundled lexical lookup table are still scored:
+their lexical features are zero-filled and a `<feature>_missing = 1`
+indicator is set. The model uses those flags to handle unseen vocabulary
+gracefully, so you can pass arbitrary English words, not just words from
+the Glasgow / NoRaRe sources.
 
 ## Imageability model details
 
