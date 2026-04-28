@@ -1,0 +1,14 @@
+linters: linters_with_defaults(
+    line_length_linter = line_length_linter(120)
+  )
+exclusions: list(
+    "tests/testthat",
+    "data-raw",
+    "analysis",
+    "research",
+    "notes",
+    "predict_glasgow.R",
+    "predict_glasgow_imageability.R",
+    "predict_glasgow_xgboost.R"
+  )
+encoding: "UTF-8"

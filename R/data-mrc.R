@@ -1,0 +1,46 @@
+#' MRC Psycholinguistic Norms
+#'
+#' Parsed version of the classic MRC Psycholinguistic Database
+#' (Coltheart and Wilson, version 2.00). The dataset includes word-level
+#' psycholinguistic variables such as imageability, concreteness, familiarity,
+#' age of acquisition, frequency counts, and phonological properties.
+#'
+#' This resource is historically important in psycholinguistics and is useful
+#' as a reference norm source when comparing older and newer lexical datasets.
+#'
+#' @name mrc_psycholinguistic_norms
+#' @docType data
+#' @usage data(mrc_psycholinguistic_norms)
+#' @format A data frame with one row per dictionary entry and columns:
+#' \describe{
+#'   \item{word}{Normalized lowercase word form used for joins.}
+#'   \item{word_original}{Original word form from the MRC dictionary entry.}
+#'   \item{phonetic}{Phonetic transcription when available.}
+#'   \item{phonetic_edited}{Edited phonetic transcription.}
+#'   \item{stress_pattern}{Stress pattern field from the original dictionary.}
+#'   \item{n_letters}{Number of letters in the word.}
+#'   \item{n_phonemes}{Number of phonemes, when available.}
+#'   \item{n_syllables}{Number of syllables, when available.}
+#'   \item{kf_frequency}{Kucera-Francis written frequency.}
+#'   \item{kf_n_categories}{Kucera-Francis number of categories.}
+#'   \item{kf_n_samples}{Kucera-Francis number of samples.}
+#'   \item{tl_frequency}{Thorndike-Lorge frequency.}
+#'   \item{brown_frequency}{Brown spoken frequency.}
+#'   \item{familiarity}{Printed familiarity rating.}
+#'   \item{concreteness}{Concreteness rating.}
+#'   \item{imageability}{Imagery rating.}
+#'   \item{meaningfulness_colorado}{Colorado meaningfulness rating.}
+#'   \item{meaningfulness_pavio}{Paivio meaningfulness rating.}
+#'   \item{age_of_acquisition}{Age-of-acquisition rating.}
+#'   \item{tq2}{TQ2 field from the MRC dictionary.}
+#'   \item{word_type}{Part-of-speech code.}
+#'   \item{pd_word_type}{Penn-Dale word type code.}
+#'   \item{alphasyllable}{Alpha-syllable indicator.}
+#'   \item{status}{Status code from the original dictionary.}
+#'   \item{variant_phoneme}{Variant phoneme field.}
+#'   \item{written_capitalized}{Written capitalization indicator.}
+#'   \item{irregular_plural}{Irregular plural indicator.}
+#' }
+#' @source Coltheart and Wilson's MRC Psycholinguistic Database, OTA item 1054:
+#'   \url{https://llds.ling-phil.ox.ac.uk/llds/xmlui/handle/20.500.14106/1054}
+NULL

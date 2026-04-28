@@ -1,0 +1,32 @@
+# R build artifacts
+*.Rcheck/
+*.tar.gz
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.Rapp.history
+src/*.o
+src/*.so
+src/*.dll
+
+# Secrets
+.env
+.env.*
+
+# Tooling state (Claude Code, OMC)
+.claude/
+.omc/
+
+# Editor / OS
+.DS_Store
+*~
+.idea/
+.vscode/
+
+# Research outputs (not shipped)
+research/results/
+research/cache/
+analysis/cache/
+analysis/*.csv
+data-raw/cache/

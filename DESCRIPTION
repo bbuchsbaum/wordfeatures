@@ -1,0 +1,26 @@
+Package: wordfeatures
+Type: Package
+Title: Lexical Feature Data and Embedding-Based Predictions
+Version: 1.0
+Date: 2026-04-28
+Authors@R: 
+    person("Brad", "Buchsbaum", email = "brad.buchsbaum@gmail.com", role = c("aut", "cre"))
+Description: Provides processed lexical norm datasets together with helper
+    functions for retrieving word embeddings and predicting imageability from
+    a bundled regularized regression model.
+License: GPL-3
+Imports: 
+    httr2,
+    rlang,
+    glmnet
+Suggests:
+    testthat,
+    devtools,
+    roxygen2
+Config/testthat/edition: 3
+Encoding: UTF-8
+Depends: 
+    R (>= 4.1)
+LazyData: true
+LazyDataCompression: bzip2
+RoxygenNote: 7.3.3
