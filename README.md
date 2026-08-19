@@ -163,35 +163,38 @@ the Glasgow / NoRaRe sources.
 ### Predict sensorimotor profiles (`predict_sensorimotor`)
 
 ```r
-sm <- predict_sensorimotor(c("rainbow", "thunder", "cinnamon", "hunger", "justice"))
+predict_sensorimotor(c("bell", "cinnamon", "justice"))
 # Default: OpenAI text-embedding-3-large (matches the bundled probe)
-
-sm[, c(
-  "text",
-  "visual_strength", "auditory_strength", "gustatory_strength",
-  "interoceptive_strength", "dominant_modality", "modality_exclusivity"
-)]
-#>      text visual_strength auditory_strength gustatory_strength
-#>   rainbow             3.9              0.87               0.19
-#>   thunder             2.8              3.33               0.21
-#>  cinnamon             3.1              0.59               4.30
-#>    hunger             2.6              1.25               1.63
-#>   justice             2.8              2.52               0.21
-#>  interoceptive_strength dominant_modality modality_exclusivity
-#>                    0.62            visual                  2.9
-#>                    1.50          auditory                  2.0
-#>                    0.71         gustatory                  2.6
-#>                    3.32     interoceptive                  1.5
-#>                    1.34              head                  1.9
 ```
 
-The return value is a data frame with one row per input. Strengths are
-on the Lancaster 0–5 scale. Specificity is `strength_m - mean(other
-strengths)`: it asks whether a word is *especially* visual (or
-gustatory, …) rather than merely concrete and multisensory. `rainbow`
-is visual and exclusive; `cinnamon` is gustatory-dominant with smell
-and mouth coming along; `justice` lands on the head/action dimension
-and is weakly sensory overall.
+That call returns a data frame with 11 strength columns (Lancaster 0–5
+scale), 11 specificity columns, plus general magnitude, dominant
+modality, and exclusivity. Predicted strengths from the bundled probe:
+
+| dimension    | bell | cinnamon | justice |
+|--------------|-----:|---------:|--------:|
+| visual       | 3.54 |     3.10 |    2.79 |
+| auditory     | 1.66 |     0.59 |    2.52 |
+| haptic       | 1.88 |     2.09 |    0.46 |
+| olfactory    | 0.22 |     3.06 |    0.20 |
+| gustatory    | 0.19 |     4.30 |    0.21 |
+| interoceptive| 0.58 |     0.71 |    1.34 |
+| hand_arm     | 1.79 |     1.66 |    1.04 |
+| foot_leg     | 0.68 |     0.29 |    0.68 |
+| head         | 2.06 |     2.00 |    3.10 |
+| mouth        | 0.83 |     3.03 |    2.02 |
+| torso        | 0.80 |     0.49 |    0.65 |
+| **mean (G)** | 1.29 |     1.94 |    1.37 |
+| **dominant** | visual | gustatory | head |
+| **exclusivity** | 2.47 |  2.59 |    1.91 |
+
+`cinnamon` is the clean hit: high taste, smell, and mouth, low
+audition. `justice` is weakly sensory and lands on head. `bell` is
+honest about a known miss — humans rate it as auditory, but the probe
+still prefers visual (vision is a high baseline in Lancaster).
+Specificity (`strength_m - mean of the other strengths`) is how
+`cinnamon` stays gustatory rather than merely “concrete and
+multisensory.”
 
 The bundled model is an embeddings-only multi-output ridge probe trained
 on the Lancaster Sensorimotor Norms. The scientific claim is modest:
