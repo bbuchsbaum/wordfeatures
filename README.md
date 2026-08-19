@@ -1,8 +1,8 @@
 # wordfeatures
 
 Lexical norm datasets for English words, plus utilities to fetch word
-embeddings from OpenAI / Google and predict imageability from a bundled
-regularized regression model.
+embeddings from OpenAI / Google and predict imageability or Lancaster
+sensorimotor profiles from bundled regularized regression models.
 
 ## Install
 
@@ -27,6 +27,7 @@ The package ships pre-computed data — these are immediately usable after
 | `norare_english_norms`        | Long-format English norms aggregated from NoRaRe                     |
 | `imageability_model_features` | Wide lexical predictor table built from NoRaRe                       |
 | `imageability_training_frame` | Merged modeling frame used to fit the bundled model                  |
+| `sensorimotor_training_frame` | Lancaster ratings plus morphological families for the sensorimotor probe |
 | `glasgow_embeddings`          | Pre-computed OpenAI `text-embedding-3-large` vectors for Glasgow words |
 
 ```r
@@ -37,20 +38,22 @@ glasgow_embeddings[["cat"]]   # 3072-dim numeric vector, no API call
 
 ## API keys: when you need them, what they accept
 
-The package has **two** exported functions that talk to embedding APIs.
-Both require an API key. Nothing else in the package does.
+The package has **three** exported functions that talk to embedding APIs.
+They require an API key unless you pass precomputed embeddings to
+`predict_sensorimotor()`. Nothing else in the package does.
 
 | Function                  | Needs an API key?                                |
 |---------------------------|--------------------------------------------------|
 | `word_embeddings()`       | **Yes**, for the chosen provider                 |
 | `predict_imageability()`  | **Yes** — it calls `word_embeddings()` internally |
+| `predict_sensorimotor()`  | **Yes**, unless you pass `embeddings =`          |
 | Anything else (data sets) | No                                               |
 
 ### Where the key is read from
 
-`word_embeddings()` and `predict_imageability()` look up keys from
-environment variables by default. You can override per call via function
-arguments.
+`word_embeddings()`, `predict_imageability()`, and
+`predict_sensorimotor()` look up keys from environment variables by
+default. You can override per call via function arguments.
 
 | Provider | Env var (default)              | Fallback env var | Function argument   |
 |----------|--------------------------------|------------------|---------------------|
@@ -157,6 +160,25 @@ indicator is set. The model uses those flags to handle unseen vocabulary
 gracefully, so you can pass arbitrary English words, not just words from
 the Glasgow / NoRaRe sources.
 
+### Predict sensorimotor profiles (`predict_sensorimotor`)
+
+```r
+predict_sensorimotor(c("bell", "cinnamon", "justice"))
+# Default: OpenAI text-embedding-3-large (matches the bundled probe)
+```
+
+The bundled model is an embeddings-only multi-output ridge probe trained
+on the Lancaster Sensorimotor Norms. It returns 11 strength scores on
+the original 0-5 scale, plus specificity, general sensorimotor
+magnitude, dominant modality, and exclusivity. The scientific claim is
+modest: these scores estimate the human-rated sensory associations that
+are linearly decodable from the frozen embedding.
+
+Use the defaults. As with imageability, the probe is locked to OpenAI
+`text-embedding-3-large`. You can pass a precomputed `embeddings` list
+to skip the API. Sentence-length inputs are scored only as an
+exploratory baseline and trigger a warning.
+
 ## Imageability model details
 
 - **Target:** mean Glasgow imageability per normalized word
@@ -167,6 +189,16 @@ the Glasgow / NoRaRe sources.
 - **Missingness handling:** every lexical predictor is paired with a
   `<feature>_missing` indicator column
 - **Model:** glmnet (regularized linear regression), bundled internally
+
+## Sensorimotor model details
+
+- **Targets:** Lancaster visual, auditory, haptic, olfactory, gustatory,
+  interoceptive, hand/arm, foot/leg, head, mouth, and torso means
+- **Embeddings:** OpenAI `text-embedding-3-large` (3072 dims), L2-normalized
+  and centered
+- **Model:** multi-output ridge (`glmnet` `family = "mgaussian"`, `alpha = 0`)
+- **Split:** morphological-family holdout; lambda chosen by grouped CV
+- **Post-process:** optional per-dimension isotonic calibration, then clip to 0-5
 
 ## API costs and rate limits
 

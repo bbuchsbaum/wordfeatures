@@ -2,8 +2,7 @@
 # internal so the package can evolve the bundled artifact without changing the
 # public API.
 .normalize_imageability_words <- function(words) {
-  words <- tolower(trimws(words))
-  gsub("\\s+", " ", words)
+  .normalize_words(words)
 }
 
 .get_imageability_model_bundle <- function() {
