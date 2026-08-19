@@ -6,8 +6,8 @@ Date: 2026-04-28
 Authors@R: 
     person("Brad", "Buchsbaum", email = "brad.buchsbaum@gmail.com", role = c("aut", "cre"))
 Description: Provides processed lexical norm datasets together with helper
-    functions for retrieving word embeddings and predicting imageability from
-    a bundled regularized regression model.
+    functions for retrieving word embeddings and predicting imageability or
+    Lancaster sensorimotor profiles from bundled regularized regression models.
 License: GPL-3
 Imports: 
     httr2,

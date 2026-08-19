@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Package Does
 
-`wordfeatures` is an R package that bundles lexical norm datasets (Glasgow, sensorimotor, MRC, NoRaRe) with utilities for retrieving word embeddings from OpenAI/Google APIs and predicting imageability scores via a bundled glmnet model. It has two exported functions: `word_embeddings()` and `predict_imageability()`.
+`wordfeatures` is an R package that bundles lexical norm datasets (Glasgow, sensorimotor, MRC, NoRaRe) with utilities for retrieving word embeddings from OpenAI/Google APIs and predicting imageability or Lancaster sensorimotor profiles via bundled glmnet models. It has three exported functions: `word_embeddings()`, `predict_imageability()`, and `predict_sensorimotor()`.
 
 ## Common Commands
 
@@ -17,24 +17,30 @@ R CMD check wordfeatures_1.0.tar.gz     # Full package check
 # Rebuild data artifacts
 Rscript data-raw/imageability_training_frame.R
 Rscript analysis/train_imageability_model_bundle.R
+Rscript data-raw/sensorimotor_training_frame.R
+Rscript data-raw/sensorimotor_embeddings.R
+Rscript analysis/train_sensorimotor_model_bundle.R
 ```
 
 ## Architecture
 
-**Two exported functions** (defined in `R/`):
+**Three exported functions** (defined in `R/`):
 - `word_embeddings()` (`R/word_embeddings.R`) — calls OpenAI or Google batch embedding APIs via `httr2`, returns named list of numeric vectors
 - `predict_imageability()` (`R/imageability.R`) — fetches embeddings, augments with lexical features from a bundled lookup table, runs prediction through a bundled `glmnet` model
+- `predict_sensorimotor()` (`R/sensorimotor.R`) — fetches embeddings and decodes an 11-dimensional Lancaster profile through a bundled multi-output ridge probe
 
-**Internal model bundle** (`R/imageability-model-bundle.R`):
-- `.get_imageability_model_bundle()` loads the bundled model artifact (a list containing the glmnet model, lexical lookup table, feature column names, and embedding metadata)
-- `.build_imageability_predictor_matrix()` constructs the predictor matrix by combining embeddings + lexical features + missingness indicators + word length
-- Words missing from the lexical lookup get zero-filled features with missingness flags set to 1
+**Internal model bundles** (`R/imageability-model-bundle.R`, `R/sensorimotor-model-bundle.R`):
+- `.get_imageability_model_bundle()` loads the bundled imageability artifact (glmnet model, lexical lookup table, feature column names, and embedding metadata)
+- `.build_predictor_matrix()` constructs the imageability predictor matrix by combining embeddings + lexical features + missingness indicators + word length
+- Words missing from the imageability lexical lookup get zero-filled features with missingness flags set to 1
+- `.get_sensorimotor_model_bundle()` loads the embeddings-only multi-output ridge probe; prediction L2-normalizes, centers, calibrates, and clips onto the Lancaster 0-5 scale
 
 **Bundled datasets** (`data/*.rda`, documented in `R/data-*.R`):
 - `glasgow_norms`, `sensorimotor_norms`, `mrc_psycholinguistic_norms` — psycholinguistic rating norms
 - `norare_english_norms` — long-format multi-source norms from NoRaRe CLDF
 - `imageability_model_features` — wide predictor table pivoted from NoRaRe
 - `imageability_training_frame` — merged modeling frame (Glasgow imageability target + lexical predictors + embeddings coverage)
+- `sensorimotor_training_frame` — Lancaster ratings plus morphological families for the sensorimotor probe
 - `glasgow_embeddings` — pre-computed OpenAI embedding vectors for Glasgow words
 
 **Data regeneration pipeline** (`data-raw/*.R`):

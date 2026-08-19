@@ -14,6 +14,9 @@ Run commands from the repository root.
 - `R -q -e "source('data-raw/sensorimotor_norms.R')"`: regenerate `data/sensorimotor_norms.rda`.
 - `Rscript data-raw/imageability_training_frame.R`: rebuild the merged modeling frame.
 - `Rscript analysis/train_imageability_model_bundle.R`: retrain and package the bundled imageability model.
+- `Rscript data-raw/sensorimotor_training_frame.R`: rebuild the Lancaster modeling frame.
+- `Rscript data-raw/sensorimotor_embeddings.R`: fetch and cache Lancaster embeddings (not packaged).
+- `Rscript analysis/train_sensorimotor_model_bundle.R`: retrain and package the bundled sensorimotor probe.
 - `Rscript research/benchmarks/run_cognitive_alignment_benchmark.R`: run the fixed-fold research benchmark.
 - `Rscript research/audit/run_norm_audit.R`: generate overlap and disagreement tables across norm sources.
 - `Rscript research/expansion/run_norm_expansion.R`: run held-out norm-expansion experiments.

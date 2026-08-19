@@ -65,3 +65,26 @@
 #' @source Built from `glasgow_norms`, `glasgow_embeddings`, and
 #' `imageability_model_features`.
 NULL
+
+#' Sensorimotor Training Frame
+#'
+#' Word-level modeling frame for the bundled Lancaster sensorimotor probe.
+#' Columns are the 11 human-rated perceptual and action-effector means,
+#' plus a Porter-stem morphological family used for grouped cross-validation.
+#' Embedding vectors are not stored in this object.
+#'
+#' @name sensorimotor_training_frame
+#' @docType data
+#' @usage data(sensorimotor_training_frame)
+#' @format A data frame with one row per normalized Lancaster word. Columns:
+#' \describe{
+#'   \item{word}{Normalized lowercase join key.}
+#'   \item{visual, auditory, haptic, olfactory, gustatory, interoceptive}{Perceptual modality means on the Lancaster 0-5 scale.}
+#'   \item{hand_arm, foot_leg, head, mouth, torso}{Action-effector means on the Lancaster 0-5 scale.}
+#'   \item{word_length}{Number of characters in the normalized word.}
+#'   \item{family}{Morphological family: Porter stems of whitespace tokens, sorted and joined.}
+#'   \item{has_embedding}{Whether a cached or Glasgow embedding exists for the word.}
+#' }
+#' @source Built from `sensorimotor_norms`, with optional coverage from
+#' `glasgow_embeddings` and the local sensorimotor embedding cache.
+NULL
