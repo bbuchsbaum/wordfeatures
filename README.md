@@ -80,7 +80,7 @@ Sys.setenv(GOOGLE_API_KEY = "AIza...")        # or GEMINI_API_KEY
   used regardless of whether you set it via `GOOGLE_API_KEY` or
   `GEMINI_API_KEY`.
 
-If a key is missing or invalid, both functions raise an informative error
+If a key is missing or invalid, these functions raise an informative error
 telling you which env var to set.
 
 ## Quick start
@@ -167,17 +167,48 @@ predict_sensorimotor(c("bell", "cinnamon", "justice"))
 # Default: OpenAI text-embedding-3-large (matches the bundled probe)
 ```
 
-The bundled model is an embeddings-only multi-output ridge probe trained
-on the Lancaster Sensorimotor Norms. It returns 11 strength scores on
-the original 0-5 scale, plus specificity, general sensorimotor
-magnitude, dominant modality, and exclusivity. The scientific claim is
-modest: these scores estimate the human-rated sensory associations that
-are linearly decodable from the frozen embedding.
+That call returns a data frame with 11 strength columns (Lancaster 0–5
+scale), 11 specificity columns, plus general magnitude, dominant
+modality, and exclusivity. Predicted strengths from the bundled probe:
 
-Use the defaults. As with imageability, the probe is locked to OpenAI
-`text-embedding-3-large`. You can pass a precomputed `embeddings` list
-to skip the API. Sentence-length inputs are scored only as an
+| dimension    | bell | cinnamon | justice |
+|--------------|-----:|---------:|--------:|
+| visual       | 3.54 |     3.10 |    2.79 |
+| auditory     | 1.66 |     0.59 |    2.52 |
+| haptic       | 1.88 |     2.09 |    0.46 |
+| olfactory    | 0.22 |     3.06 |    0.20 |
+| gustatory    | 0.19 |     4.30 |    0.21 |
+| interoceptive| 0.58 |     0.71 |    1.34 |
+| hand_arm     | 1.79 |     1.66 |    1.04 |
+| foot_leg     | 0.68 |     0.29 |    0.68 |
+| head         | 2.06 |     2.00 |    3.10 |
+| mouth        | 0.83 |     3.03 |    2.02 |
+| torso        | 0.80 |     0.49 |    0.65 |
+| **mean (G)** | 1.29 |     1.94 |    1.37 |
+| **dominant** | visual | gustatory | head |
+| **exclusivity** | 2.47 |  2.59 |    1.91 |
+
+`cinnamon` is the clean hit: high taste, smell, and mouth, low
+audition. `justice` is weakly sensory and lands on head. `bell` is
+honest about a known miss — humans rate it as auditory, but the probe
+still prefers visual (vision is a high baseline in Lancaster).
+Specificity (`strength_m - mean of the other strengths`) is how
+`cinnamon` stays gustatory rather than merely “concrete and
+multisensory.”
+
+The bundled model is an embeddings-only multi-output ridge probe trained
+on the Lancaster Sensorimotor Norms. The scientific claim is modest:
+these scores estimate the human-rated sensory associations that are
+linearly decodable from the frozen embedding. Use the defaults — the
+probe is locked to OpenAI `text-embedding-3-large`. Pass a precomputed
+`embeddings` list to skip the API. Sentence-length inputs are an
 exploratory baseline and trigger a warning.
+
+To compare a prediction with the human rating for a normed word:
+
+```r
+subset(sensorimotor_norms, Word == "CINNAMON")
+```
 
 ## Imageability model details
 
@@ -207,7 +238,8 @@ into a single request per call, so cost scales roughly with the total
 number of input tokens. The bundled retry policy automatically retries on
 HTTP 429/500/502/503/504 up to 3 times. For large jobs, prefer
 `text-embedding-3-small` (cheaper, 1536 dims) unless you specifically need
-the 3072-dim space the imageability model was trained in.
+the 3072-dim space the imageability and sensorimotor models were
+trained in.
 
 ## Common commands
 
