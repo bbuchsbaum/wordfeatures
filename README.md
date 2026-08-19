@@ -80,7 +80,7 @@ Sys.setenv(GOOGLE_API_KEY = "AIza...")        # or GEMINI_API_KEY
   used regardless of whether you set it via `GOOGLE_API_KEY` or
   `GEMINI_API_KEY`.
 
-If a key is missing or invalid, both functions raise an informative error
+If a key is missing or invalid, these functions raise an informative error
 telling you which env var to set.
 
 ## Quick start
@@ -163,21 +163,49 @@ the Glasgow / NoRaRe sources.
 ### Predict sensorimotor profiles (`predict_sensorimotor`)
 
 ```r
-predict_sensorimotor(c("bell", "cinnamon", "justice"))
+sm <- predict_sensorimotor(c("rainbow", "thunder", "cinnamon", "hunger", "justice"))
 # Default: OpenAI text-embedding-3-large (matches the bundled probe)
+
+sm[, c(
+  "text",
+  "visual_strength", "auditory_strength", "gustatory_strength",
+  "interoceptive_strength", "dominant_modality", "modality_exclusivity"
+)]
+#>      text visual_strength auditory_strength gustatory_strength
+#>   rainbow             3.9              0.87               0.19
+#>   thunder             2.8              3.33               0.21
+#>  cinnamon             3.1              0.59               4.30
+#>    hunger             2.6              1.25               1.63
+#>   justice             2.8              2.52               0.21
+#>  interoceptive_strength dominant_modality modality_exclusivity
+#>                    0.62            visual                  2.9
+#>                    1.50          auditory                  2.0
+#>                    0.71         gustatory                  2.6
+#>                    3.32     interoceptive                  1.5
+#>                    1.34              head                  1.9
 ```
 
-The bundled model is an embeddings-only multi-output ridge probe trained
-on the Lancaster Sensorimotor Norms. It returns 11 strength scores on
-the original 0-5 scale, plus specificity, general sensorimotor
-magnitude, dominant modality, and exclusivity. The scientific claim is
-modest: these scores estimate the human-rated sensory associations that
-are linearly decodable from the frozen embedding.
+The return value is a data frame with one row per input. Strengths are
+on the Lancaster 0–5 scale. Specificity is `strength_m - mean(other
+strengths)`: it asks whether a word is *especially* visual (or
+gustatory, …) rather than merely concrete and multisensory. `rainbow`
+is visual and exclusive; `cinnamon` is gustatory-dominant with smell
+and mouth coming along; `justice` lands on the head/action dimension
+and is weakly sensory overall.
 
-Use the defaults. As with imageability, the probe is locked to OpenAI
-`text-embedding-3-large`. You can pass a precomputed `embeddings` list
-to skip the API. Sentence-length inputs are scored only as an
+The bundled model is an embeddings-only multi-output ridge probe trained
+on the Lancaster Sensorimotor Norms. The scientific claim is modest:
+these scores estimate the human-rated sensory associations that are
+linearly decodable from the frozen embedding. Use the defaults — the
+probe is locked to OpenAI `text-embedding-3-large`. Pass a precomputed
+`embeddings` list to skip the API. Sentence-length inputs are an
 exploratory baseline and trigger a warning.
+
+To compare a prediction with the human rating for a normed word:
+
+```r
+subset(sensorimotor_norms, Word == "CINNAMON")
+```
 
 ## Imageability model details
 
@@ -207,7 +235,8 @@ into a single request per call, so cost scales roughly with the total
 number of input tokens. The bundled retry policy automatically retries on
 HTTP 429/500/502/503/504 up to 3 times. For large jobs, prefer
 `text-embedding-3-small` (cheaper, 1536 dims) unless you specifically need
-the 3072-dim space the imageability model was trained in.
+the 3072-dim space the imageability and sensorimotor models were
+trained in.
 
 ## Common commands
 
